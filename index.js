@@ -3,7 +3,6 @@ import cors from "cors";
 import dotenv from "dotenv";
 import dbConfig from "./Database/dbConfig.js";
 import authRoute from "./Routes/authRoute.js";
-import { initializeApp } from "firebase/app";
 import admin from "firebase-admin";
 import serviceAccount from "./google-config.json" assert { type: "json" };
 
@@ -20,11 +19,12 @@ app.get("/",(req,res)=>{
 res.send("Welcome To NewsApp Backend :)");
 })
 
-app.use("/api/auth", authRoute);
-
 admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
-  });
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: 'https://news-app-4e53c.firebaseio.com'
+});
+
+app.use("/api/auth", authRoute);
 
 //app.initializeApp(firebaseConfig);
 

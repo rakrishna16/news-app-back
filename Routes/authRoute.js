@@ -8,7 +8,7 @@ router.post("/login", loginUser);
 router.post("/forgot-password",forgotPassword);
 router.post("/reset-password/:id/:token",resetPassword);
 router.post("/mailsend",mailNotification);
-router.post("/pushnotification",setpushNotifcation);
+router.post("/send-notification",setpushNotifcation);
 
 
 export default router;

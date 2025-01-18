@@ -22,11 +22,11 @@ const userSchema = new mongoose.Schema({
     default:["all"]
   },
   frequency: {
-    type: [String],
+    type: String,
     default:"5min"
   },
   notificationchannels: {
-    type: [String],
+    type: String,
     default:"email"
   },
   token: {

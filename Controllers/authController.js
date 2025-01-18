@@ -5,6 +5,9 @@ import dotenv from "dotenv";
 import nodemailer from "nodemailer";
 import admin from "firebase-admin";
 import cron from "node-cron";
+import { initializeApp } from 'firebase/app';
+import { getMessaging, getToken, onMessage } from 'firebase/messaging';
+
 
 dotenv.config();
 
@@ -148,7 +151,7 @@ export const registerUser = async (req, res) => {
       const { email } = req.body;
       
       const user = await User.findOne({ email });
-      
+
       if(user.category === "5mins"){
         const timeInt= 5 * 60 * 1000;
       }else if(user.category === "1hr"){
@@ -199,17 +202,60 @@ export const registerUser = async (req, res) => {
 
 export const setpushNotifcation = async (req, res)=>{
   try {
+
+    const firebaseConfig = {
+      apiKey: process.env.API_KEY, 
+      authDomain: process.env.AUTH_ADMIN, 
+      projectId: process.env.PROJECT_ID, 
+      messagingSenderId: process.env.MESSAGE_SENDER_ID, 
+      storageBucket: process.env.STORAGE_BUCKET,
+      appId: process.env.APP_ID
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const messaging = getMessaging(app);
+
+  const tokenK = await getToken(messaging, {vapidKey: process.env.VAP_ID});
+
+console.log(tokenK)
+
     const { email } = req.body;
     const user = await User.findOne({ email });
     if (!user) {
       throw new Error('User not found');
     }
+// const { title, body, token } = req.body; 
+// const message = { notification: 
+//   { title, 
+//     body, 
+//   }, 
+//   token, 
+// }; 
 
-    const message = { notification: { 
+// admin.messaging().send(message) 
+// .then((response) => { console.log('Successfully sent message:', response); 
+//   res.status(200).send('Notification sent successfully'); 
+// }) 
+//   .catch((error) => { console.error('Error sending message:', error); 
+//   res.status(500).send('Error sending notification'); 
+// });
+
+    const message = { 
+      notification: { 
       title: 'Hello!', 
       body: 'This is your notification sent every 10 minutes.', }, 
-      token: "110463575861734872094", // Replace with your device token 
-      }; 
+      token: tokenK, // Replace with your device token 
+    webpush: {
+      fcm_options: {
+        link: "http://localhost:5173"
+      }
+      },
+    }
+
+      onMessage(messaging, (message) => {
+        console.log('Message received. ', message);
+        // ...
+      });
       
       admin.messaging().send(message) 
       .then(response => { console.log('Successfully sent message:', response); }) 
