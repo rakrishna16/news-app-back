@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import dbConfig from "./Database/dbConfig.js";
 import authRoute from "./Routes/authRoute.js";
 import admin from "firebase-admin";
-import serviceAccount from "./google-config.json" assert { type: "json" };
+//import serviceAccount from "./google-config.json";
 
 dotenv.config();
 
@@ -19,10 +19,10 @@ app.get("/",(req,res)=>{
 res.send("Welcome To NewsApp Backend :)");
 })
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: 'https://news-app-4e53c.firebaseio.com'
-});
+// admin.initializeApp({
+//   credential: admin.credential.cert(serviceAccount),
+//   databaseURL: 'https://news-app-4e53c.firebaseio.com'
+// });
 
 app.use("/api/auth", authRoute);
 
