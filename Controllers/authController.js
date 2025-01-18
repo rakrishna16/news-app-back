@@ -146,7 +146,17 @@ export const registerUser = async (req, res) => {
   export const mailNotification = async (req, res) =>{
     try {
       const { email } = req.body;
+      
       const user = await User.findOne({ email });
+      
+      if(user.category === "5mins"){
+        const timeInt= 5 * 60 * 1000;
+      }else if(user.category === "1hr"){
+        const timeInt= 60 * 60 * 1000;
+      }else if(user.category === "24hr"){
+        const timeInt = 1440 * 60 * 1000;
+      }
+     
       setInterval(() => {
       
       if (!user) {
@@ -180,7 +190,7 @@ export const registerUser = async (req, res) => {
           res.status(200).json({ message: "Email Sent Successfully" });
         }      
       });
-    }, 5 * 60 * 1000);
+    }, timeInt);
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
