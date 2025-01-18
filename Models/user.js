@@ -11,23 +11,23 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: true
-},
+    required: true,
+  },
   phone: {
     type: Number,
-    required: true
+    required: true,
   },
   categories: {
     type: [String],
-    default:["all"]
+    default: ["all"],
   },
   frequency: {
     type: String,
-    default:"5min"
+    default: "5min",
   },
   notificationchannels: {
     type: String,
-    default:"email"
+    default: "email",
   },
   token: {
     type: String,
