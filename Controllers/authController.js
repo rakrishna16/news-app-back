@@ -71,6 +71,19 @@ export const loginUser = async (req, res) => {
   }
 };
 
+//get user details
+export const getUser = async (req, res) => {
+  try {
+     const {email}  = req.params;  
+    
+      const user = await User.findOne({email});
+    res.status(200).json({ message: "Posts Fetched Successfully", user });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
+
 // forgot password
 export const forgotPassword = async (req, res) => {
   try {
@@ -96,7 +109,7 @@ export const forgotPassword = async (req, res) => {
       subject: "Password Reset Link",
       text: `You are receiving this because you have requested the reset of the password for your account 
         Please click the following link or paste it into your browser to complete the process
-        http://localhost:5173/reset-password/${user._id}/${token}`,
+        https://hkxnews.netlify.app/reset-password/${user._id}/${token}`,
     };
     transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
@@ -212,6 +225,16 @@ export const mailNotification = async (req, res) => {
   }
 };
 
+export const apiKeyFire = () => {
+   [ {apiKey: process.env.API_KEY,
+    authDomain: process.env.AUTH_ADMIN,
+    projectId: process.env.PROJECT_ID,
+    messagingSenderId: process.env.MESSAGE_SENDER_ID,
+    storageBucket: process.env.STORAGE_BUCKET,
+    appId: process.env.APP_ID}]
+}
+
+
 export const setpushNotifcation = async (req, res) => {
   try {
     const firebaseConfig = {
@@ -229,6 +252,10 @@ export const setpushNotifcation = async (req, res) => {
     const tokenK = await getToken(messaging, { vapidKey: process.env.VAP_ID });
 
     console.log(tokenK);
+
+    onMessage(messaging,(payload)=>{
+      console.log(payload)
+    })
 
     const { email } = req.body;
     const user = await User.findOne({ email });
@@ -259,7 +286,7 @@ export const setpushNotifcation = async (req, res) => {
       token: tokenK, // Replace with your device token
       webpush: {
         fcm_options: {
-          link: "http://localhost:5173",
+          link: "https://hkxnews.netlify.app",
         },
       },
     };
