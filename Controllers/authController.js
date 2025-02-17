@@ -74,10 +74,14 @@ export const loginUser = async (req, res) => {
 //get user details
 export const getUser = async (req, res) => {
   try {
-     const {email}  = req.params;  
-    
-      const user = await User.findOne({email});
-    res.status(200).json({ message: "Posts Fetched Successfully", user });
+     const {token} = req.params;  
+     console.log(token);  
+      const user = await User.findOne({token});
+      if (!user) {
+        return res.status(404).json({ message: "User Not Found" });
+      }
+    res.status(200).json({ message: "User Fetched Successfully", user });
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -225,13 +229,18 @@ export const mailNotification = async (req, res) => {
   }
 };
 
-export const apiKeyFire = () => {
-   [ {apiKey: process.env.API_KEY,
-    authDomain: process.env.AUTH_ADMIN,
-    projectId: process.env.PROJECT_ID,
-    messagingSenderId: process.env.MESSAGE_SENDER_ID,
-    storageBucket: process.env.STORAGE_BUCKET,
-    appId: process.env.APP_ID}]
+const apiKeyto =  [ 
+  {apiKey: process.env.API_KEY},
+  {authDomain: process.env.AUTH_ADMIN},
+  {projectId: process.env.PROJECT_ID},
+  {messagingSenderId: process.env.MESSAGE_SENDER_ID},
+  {storageBucket: process.env.STORAGE_BUCKET},
+  {appId: process.env.APP_ID}];
+
+export const apiKeyFire = (req,res) => {
+  res
+  .status(200)
+  .json({ message: "Keys Retrieved Successfully", data: apiKeyto });
 }
 
 

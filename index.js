@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import dbConfig from "./Database/dbConfig.js";
 import authRoute from "./Routes/authRoute.js";
+import likeRoute from "./Routes/likeRoute.js";
 import admin from "firebase-admin";
 //import serviceAccount from "./google-config.json";
 
@@ -25,6 +26,7 @@ app.get("/", (req, res) => {
 // });
 
 app.use("/api/auth", authRoute);
+app.use("/api/like", likeRoute);
 
 //app.initializeApp(firebaseConfig);
 

@@ -1,5 +1,6 @@
 import express from "express";
 import { forgotPassword,apiKeyFire, mailNotification,getUser, loginUser, registerUser, resetPassword, setpushNotifcation } from "../Controllers/authController.js";
+import { authMiddleware } from "../Middleware/authMiddleware.js";
 
 const router = express.Router();
 
