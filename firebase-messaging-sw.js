@@ -17,6 +17,25 @@ const firebaseApp = initializeApp({
   appId: process.env.APP_ID,
 });
 
+messaging.onBackgroundMessage((payload) => {
+  console.log(
+    "[firebase-messaging-sw.js] Received background message ",
+    payload
+  );
+  // Customize notification here
+  const notificationTitle = payload.notification.title;
+  const notificationOptions = {
+    body: payload.notification.body,
+    icon: "/firebase-logo.png",
+  };
+
+  self.registration.showNotification(notificationTitle, notificationOptions);
+});
+
+//const messaging = firebase.messaging();
+  
+
+
 // Retrieve an instance of Firebase Messaging so that it can handle background
 // messages.
 const messaging = getMessaging(firebaseApp);
