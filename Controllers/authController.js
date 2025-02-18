@@ -230,12 +230,14 @@ export const mailNotification = async (req, res) => {
 };
 
 const apiKeyto =  [ 
-  {apiKey: process.env.API_KEY},
-  {authDomain: process.env.AUTH_ADMIN},
-  {projectId: process.env.PROJECT_ID},
-  {messagingSenderId: process.env.MESSAGE_SENDER_ID},
-  {storageBucket: process.env.STORAGE_BUCKET},
-  {appId: process.env.APP_ID}];
+  {
+  "apiKey": process.env.API_KEY,
+  "authDomain": process.env.AUTH_ADMIN,
+  "projectId": process.env.PROJECT_ID,
+  "messagingSenderId": process.env.MESSAGE_SENDER_ID,
+  "storageBucket": process.env.STORAGE_BUCKET,
+  "appId": process.env.APP_ID
+}];
 
 export const apiKeyFire = (req,res) => {
   res
