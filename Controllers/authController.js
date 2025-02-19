@@ -3,13 +3,18 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import nodemailer from "nodemailer";
-import admin from "firebase-admin";
+import messaging from "../firebaseAdmin.js";
+import express from "express";
 import cron from "node-cron";
 import { initializeApp } from "firebase/app";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
 
-dotenv.config();
 
+
+dotenv.config();
+const app = express();
+
+app.use(express.json());
 export const registerUser = async (req, res) => {
   try {
     const {
@@ -229,21 +234,28 @@ export const mailNotification = async (req, res) => {
   }
 };
 
-const apiKeyto =  [ 
-  {
-  "apiKey": process.env.API_KEY,
-  "authDomain": process.env.AUTH_ADMIN,
-  "projectId": process.env.PROJECT_ID,
-  "messagingSenderId": process.env.MESSAGE_SENDER_ID,
-  "storageBucket": process.env.STORAGE_BUCKET,
-  "appId": process.env.APP_ID
-}];
 
-export const apiKeyFire = (req,res) => {
-  res
-  .status(200)
-  .json({ message: "Keys Retrieved Successfully", data: apiKeyto });
+
+export const sendNotification = async (req, res) => {
+
+  try {
+    const { token, title, body } = req.body;
+    const message = {
+      notification: {
+        title,
+        body,
+      },
+      token,
+    };
+    await messaging.send(message);
+    res.status(200).json({ success: true, message: "Notification sent!" });
+  } catch (error) {
+    console.error("Error sending notification:", error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+
 }
+
 
 
 export const setpushNotifcation = async (req, res) => {
@@ -260,9 +272,9 @@ export const setpushNotifcation = async (req, res) => {
     const app = initializeApp(firebaseConfig);
     const messaging = getMessaging(app);
 
-    const tokenK = await getToken(messaging, { vapidKey: process.env.VAP_ID });
+    const token = await getToken(messaging, { vapidKey: process.env.VAP_ID });
 
-    console.log(tokenK);
+    console.log(token);
 
     onMessage(messaging,(payload)=>{
       console.log(payload)
@@ -273,7 +285,7 @@ export const setpushNotifcation = async (req, res) => {
     if (!user) {
       throw new Error("User not found");
     }
-    // const { title, body, token } = req.body;
+    const { title, body, token: tokenK } = req.body;
     // const message = { notification:
     //   { title,
     //     body,
@@ -289,44 +301,44 @@ export const setpushNotifcation = async (req, res) => {
     //   res.status(500).send('Error sending notification');
     // });
 
-    const message = {
-      notification: {
-        title: "Hello!",
-        body: "This is your notification sent every 10 minutes.",
-      },
-      token: tokenK, // Replace with your device token
-      webpush: {
-        fcm_options: {
-          link: "https://hkxnews.netlify.app",
-        },
-      },
-    };
-
-    onMessage(messaging, (message) => {
-      console.log("Message received. ", message);
-      // ...
-    });
-
-    admin
-      .messaging()
-      .send(message)
-      .then((response) => {
-        console.log("Successfully sent message:", response);
-      })
-      .catch((error) => {
-        console.error("Error sending message:", error);
-      });
-
-    //   const payload = {
-    //     notification: {
-    //       title: message.title,
-    //       body: message.body,
+    // const message = {
+    //   notification: {
+    //     title: "Hello!",
+    //     body: "This is your notification sent every 10 minutes.",
+    //   },
+    //   token: tokenK, // Replace with your device token
+    //   webpush: {
+    //     fcm_options: {
+    //       link: "http://localhost:4000",
     //     },
-    //     token: user.fcmToken,
-    //   };
+    //   },
+    // };
 
-    //   const response = await admin.messaging().send(payload);
-    //   console.log('Successfully sent message:', response);
+    // onMessage(messaging, (message) => {
+    //   console.log("Message received. ", message);
+    //   // ...
+    // });
+
+    // admin
+    //   .messaging()
+    //   .send(message)
+    //   .then((response) => {
+    //     console.log("Successfully sent message:", response);
+    //   })
+    //   .catch((error) => {
+    //     console.error("Error sending message:", error);
+    //   });
+
+      const payload = {
+        notification: {
+          title: messaging.title,
+          body: messaging.body,
+        },
+        token: user.fcmToken,
+      };
+
+      const response = await admin.messaging().send(payload);
+      console.log('Successfully sent message:', response);
   } catch (error) {
     console.error("Error sending message:", error);
   }
