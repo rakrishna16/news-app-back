@@ -246,6 +246,11 @@ export const sendNotification = async (req, res) => {
         body,
       },
       token,
+      webpush: {
+        fcm_options: {
+           link: "https://newshk.netlify.app/",
+         }
+        },
     };
     await messaging.send(message);
     res.status(200).json({ success: true, message: "Notification sent!" });
@@ -253,6 +258,7 @@ export const sendNotification = async (req, res) => {
     console.error("Error sending notification:", error);
     res.status(500).json({ success: false, error: error.message });
   }
+  
 
 }
 
