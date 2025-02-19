@@ -31,7 +31,6 @@ export const registerUser = async (req, res) => {
     if (user) {
       return res.status(404).json({ message: "User Already Registerd" });
     }
-    console.log(hashPassword);
     const newUser = new User({
       name,
       email,
@@ -80,12 +79,11 @@ export const loginUser = async (req, res) => {
 export const getUser = async (req, res) => {
   try {
      const {token} = req.params;  
-     console.log(token);  
-      const user = await User.findOne({token});
+      const user = await User.find({token});
       if (!user) {
         return res.status(404).json({ message: "User Not Found" });
       }
-    res.status(200).json({ message: "User Fetched Successfully", user });
+    res.status(200).json({ message: "User Fetched Successfully", data: user });
 
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -118,7 +116,7 @@ export const forgotPassword = async (req, res) => {
       subject: "Password Reset Link",
       text: `You are receiving this because you have requested the reset of the password for your account 
         Please click the following link or paste it into your browser to complete the process
-        https://hkxnews.netlify.app/reset-password/${user._id}/${token}`,
+        https://newshk.netlify.app/reset-password/${user._id}/${token}`,
     };
     transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
@@ -248,7 +246,7 @@ export const sendNotification = async (req, res) => {
       token,
       webpush: {
         fcm_options: {
-           link: "https://newshk.netlify.app/",
+           link: "https://newshk.netlify.app",
          }
         },
     };
@@ -279,8 +277,6 @@ export const setpushNotifcation = async (req, res) => {
     const messaging = getMessaging(app);
 
     const token = await getToken(messaging, { vapidKey: process.env.VAP_ID });
-
-    console.log(token);
 
     onMessage(messaging,(payload)=>{
       console.log(payload)
